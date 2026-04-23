@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -513,7 +513,7 @@ function InboxPlanPanel({ domain, userId }: { domain: Domain & { planned_inbox_c
     },
   });
 
-  const grouped = useMemo(() => {
+  const grouped = useMemo<[string, PlannedInboxRow[]][]>(() => {
     const map = new Map<string, PlannedInboxRow[]>();
     for (const ib of inboxes ?? []) {
       const arr = map.get(ib.subdomain_fqdn) ?? [];
