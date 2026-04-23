@@ -9,12 +9,12 @@ export const Route = createFileRoute("/_app")({
   component: AppLayout,
 });
 
-const nav = [
+const nav: ReadonlyArray<{ to: string; label: string; icon: typeof Mail; exact?: boolean }> = [
   { to: "/", label: "Overview", icon: Mail, exact: true },
   { to: "/domains", label: "Domains", icon: Globe },
   { to: "/servers", label: "Servers", icon: Server },
   { to: "/settings", label: "Settings", icon: Settings },
-] as const;
+];
 
 function AppLayout() {
   const { user, loading, signOut } = useAuth();
