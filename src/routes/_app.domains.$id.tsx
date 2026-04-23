@@ -72,6 +72,7 @@ function DomainDetail() {
       <Tabs defaultValue="dns">
         <TabsList>
           <TabsTrigger value="dns">DNS records</TabsTrigger>
+          <TabsTrigger value="plan">Inbox plan</TabsTrigger>
           <TabsTrigger value="mailcow">Mailcow</TabsTrigger>
           <TabsTrigger value="mailboxes">Mailboxes</TabsTrigger>
           <TabsTrigger value="config">Configuration</TabsTrigger>
@@ -79,6 +80,10 @@ function DomainDetail() {
 
         <TabsContent value="dns" className="space-y-4">
           <DnsPanel domain={domain} records={records ?? []} refetch={refetchRecords} userId={user?.id ?? ""} />
+        </TabsContent>
+
+        <TabsContent value="plan" className="space-y-4">
+          <InboxPlanPanel domain={domain} userId={user?.id ?? ""} />
         </TabsContent>
 
         <TabsContent value="mailcow" className="space-y-4">
