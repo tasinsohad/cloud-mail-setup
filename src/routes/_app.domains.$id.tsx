@@ -384,7 +384,7 @@ function MailboxesPanel({ domain }: { domain: Domain }) {
       <CardContent>
         {!ready && <div className="text-sm text-muted-foreground">Configure Mailcow API key first.</div>}
         {ready && data && !data.ok && <div className="text-sm text-destructive">{data.error}</div>}
-        {ready && data && data.ok && (
+        {ready && data && data.ok && "mailboxes" in data && (
           <div className="overflow-hidden rounded-md border">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
