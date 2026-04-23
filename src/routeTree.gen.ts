@@ -15,6 +15,7 @@ import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppServersRouteImport } from './routes/_app.servers'
 import { Route as AppDomainsRouteImport } from './routes/_app.domains'
+import { Route as AppDomainsIdRouteImport } from './routes/_app.domains.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -45,35 +46,49 @@ const AppDomainsRoute = AppDomainsRouteImport.update({
   path: '/domains',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDomainsIdRoute = AppDomainsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppDomainsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/auth': typeof AuthRoute
-  '/domains': typeof AppDomainsRoute
+  '/domains': typeof AppDomainsRouteWithChildren
   '/servers': typeof AppServersRoute
   '/settings': typeof AppSettingsRoute
+  '/domains/$id': typeof AppDomainsIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
-  '/domains': typeof AppDomainsRoute
+  '/domains': typeof AppDomainsRouteWithChildren
   '/servers': typeof AppServersRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
+  '/domains/$id': typeof AppDomainsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_app/domains': typeof AppDomainsRoute
+  '/_app/domains': typeof AppDomainsRouteWithChildren
   '/_app/servers': typeof AppServersRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/domains/$id': typeof AppDomainsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/domains' | '/servers' | '/settings'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/domains'
+    | '/servers'
+    | '/settings'
+    | '/domains/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/domains' | '/servers' | '/settings' | '/'
+  to: '/auth' | '/domains' | '/servers' | '/settings' | '/' | '/domains/$id'
   id:
     | '__root__'
     | '/_app'
@@ -82,6 +97,7 @@ export interface FileRouteTypes {
     | '/_app/servers'
     | '/_app/settings'
     | '/_app/'
+    | '/_app/domains/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -133,18 +149,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDomainsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/domains/$id': {
+      id: '/_app/domains/$id'
+      path: '/$id'
+      fullPath: '/domains/$id'
+      preLoaderRoute: typeof AppDomainsIdRouteImport
+      parentRoute: typeof AppDomainsRoute
+    }
   }
 }
 
+interface AppDomainsRouteChildren {
+  AppDomainsIdRoute: typeof AppDomainsIdRoute
+}
+
+const AppDomainsRouteChildren: AppDomainsRouteChildren = {
+  AppDomainsIdRoute: AppDomainsIdRoute,
+}
+
+const AppDomainsRouteWithChildren = AppDomainsRoute._addFileChildren(
+  AppDomainsRouteChildren,
+)
+
 interface AppRouteChildren {
-  AppDomainsRoute: typeof AppDomainsRoute
+  AppDomainsRoute: typeof AppDomainsRouteWithChildren
   AppServersRoute: typeof AppServersRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppDomainsRoute: AppDomainsRoute,
+  AppDomainsRoute: AppDomainsRouteWithChildren,
   AppServersRoute: AppServersRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
