@@ -661,6 +661,39 @@ function InboxPlanPanel({ domain, userId }: { domain: Domain & { planned_inbox_c
                 className="w-24"
               />
             </div>
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (!inboxes?.length) { toast.info("No inboxes to export"); return; }
+                const rows = inboxes.map((ib) => ({
+                  domain: domain.name,
+                  subdomain: ib.subdomain_fqdn,
+                  prefix: ib.subdomain_prefix,
+                  local_part: ib.local_part,
+                  email: ib.email,
+                  person_name: ib.person_name ?? "",
+                  format: ib.format ?? "",
+                  status: ib.status,
+                }));
+                downloadFile(`${domain.name}-inboxes.csv`, toCsv(rows), "text/csv;charset=utf-8");
+              }}
+              disabled={!inboxes?.length}
+            >
+              <Download className="mr-2 h-4 w-4" /> CSV
+            </Button>
+            <Button onClick={regenerate} disabled={regenerating}>
+              <Shuffle className="mr-2 h-4 w-4" />
+              {regenerating ? "Generating…" : plan ? "Regenerate" : "Generate plan"}
+            </Button>
+          </div>
+                value={overrideTotal}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setOverrideTotal(v === "" ? "" : parseInt(v, 10));
+                }}
+                className="w-24"
+              />
+            </div>
             <Button onClick={regenerate} disabled={regenerating}>
               <Shuffle className="mr-2 h-4 w-4" />
               {regenerating ? "Generating…" : plan ? "Regenerate" : "Generate plan"}
