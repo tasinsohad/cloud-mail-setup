@@ -14,7 +14,252 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dns_records: {
+        Row: {
+          cf_record_id: string | null
+          content: string
+          created_at: string
+          domain_id: string
+          id: string
+          last_error: string | null
+          name: string
+          priority: number | null
+          proxied: boolean
+          status: string
+          ttl: number
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cf_record_id?: string | null
+          content: string
+          created_at?: string
+          domain_id: string
+          id?: string
+          last_error?: string | null
+          name: string
+          priority?: number | null
+          proxied?: boolean
+          status?: string
+          ttl?: number
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cf_record_id?: string | null
+          content?: string
+          created_at?: string
+          domain_id?: string
+          id?: string
+          last_error?: string | null
+          name?: string
+          priority?: number | null
+          proxied?: boolean
+          status?: string
+          ttl?: number
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dns_records_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      domains: {
+        Row: {
+          cf_account_id: string | null
+          cf_zone_id: string | null
+          created_at: string
+          id: string
+          mailcow_api_key: string | null
+          mailcow_hostname: string | null
+          name: string
+          notes: string | null
+          server_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cf_account_id?: string | null
+          cf_zone_id?: string | null
+          created_at?: string
+          id?: string
+          mailcow_api_key?: string | null
+          mailcow_hostname?: string | null
+          name: string
+          notes?: string | null
+          server_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cf_account_id?: string | null
+          cf_zone_id?: string | null
+          created_at?: string
+          id?: string
+          mailcow_api_key?: string | null
+          mailcow_hostname?: string | null
+          name?: string
+          notes?: string | null
+          server_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "domains_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          completed: number
+          created_at: string
+          domain_id: string | null
+          failed: number
+          id: string
+          logs: Json
+          status: string
+          total: number
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: number
+          created_at?: string
+          domain_id?: string | null
+          failed?: number
+          id?: string
+          logs?: Json
+          status?: string
+          total?: number
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: number
+          created_at?: string
+          domain_id?: string | null
+          failed?: number
+          id?: string
+          logs?: Json
+          status?: string
+          total?: number
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rate_limits: {
+        Row: {
+          count: number
+          provider: string
+          user_id: string
+          window_started_at: string
+        }
+        Insert: {
+          count?: number
+          provider: string
+          user_id: string
+          window_started_at?: string
+        }
+        Update: {
+          count?: number
+          provider?: string
+          user_id?: string
+          window_started_at?: string
+        }
+        Relationships: []
+      }
+      servers: {
+        Row: {
+          created_at: string
+          hostname: string
+          id: string
+          ip_address: string
+          label: string
+          setup_steps: Json
+          ssh_user: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hostname: string
+          id?: string
+          ip_address: string
+          label: string
+          setup_steps?: Json
+          ssh_user?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hostname?: string
+          id?: string
+          ip_address?: string
+          label?: string
+          setup_steps?: Json
+          ssh_user?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_secrets: {
+        Row: {
+          cf_account_id: string | null
+          cf_api_token: string | null
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cf_account_id?: string | null
+          cf_api_token?: string | null
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cf_account_id?: string | null
+          cf_api_token?: string | null
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
