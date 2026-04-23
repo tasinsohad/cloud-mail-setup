@@ -97,6 +97,48 @@ function DomainsPage() {
     },
   });
 
+  const { data: plans } = useQuery({
+    queryKey: ["all-plans"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("domain_plans")
+        .select("domain_id, total_inboxes, subdomain_count");
+      if (error) throw error;
+      return data as PlanSummary[];
+    },
+  });
+
+  const planByDomain = useMemo(() => {
+    const m = new Map<string, PlanSummary>();
+    for (const p of plans ?? []) m.set(p.domain_id, p);
+    return m;
+  }, [plans]);
+
+  const exportAll = async () => {
+    const { data, error } = await supabase
+      .from("planned_inboxes")
+      .select("domain_id, subdomain_fqdn, subdomain_prefix, local_part, email, person_name, format, status")
+      .order("subdomain_fqdn")
+      .order("local_part");
+    if (error) { toast.error(error.message); return; }
+    const rows = (data as InboxRow[]) ?? [];
+    if (!rows.length) { toast.info("No planned inboxes yet"); return; }
+    const domainName = new Map(domains?.map((d) => [d.id, d.name]) ?? []);
+    const enriched = rows.map((r) => ({
+      domain: domainName.get(r.domain_id) ?? "",
+      subdomain: r.subdomain_fqdn,
+      prefix: r.subdomain_prefix,
+      local_part: r.local_part,
+      email: r.email,
+      person_name: r.person_name ?? "",
+      format: r.format ?? "",
+      status: r.status,
+    }));
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadFile(`planned-inboxes-${stamp}.csv`, toCsv(enriched), "text/csv;charset=utf-8");
+    toast.success(`Exported ${enriched.length} inbox(es)`);
+  };
+
   const onDelete = async (id: string) => {
     if (!confirm("Delete this domain and its DNS records?")) return;
     const { error } = await supabase.from("domains").delete().eq("id", id);
