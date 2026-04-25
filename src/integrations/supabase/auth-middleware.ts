@@ -27,7 +27,19 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
         context: {
           supabase,
           userId: "12345678-1234-1234-1234-123456789012",
-          claims: { sub: "12345678-1234-1234-1234-123456789012" },
+          claims: {
+            iss: "local-dev",
+            aud: "authenticated",
+            exp: Math.floor(Date.now() / 1000) + 60 * 60,
+            iat: Math.floor(Date.now() / 1000),
+            sub: "12345678-1234-1234-1234-123456789012",
+            email: "dev@local.test",
+            phone: "",
+            role: "authenticated",
+            aal: "aal1",
+            amr: [],
+            session_id: "local-dev-session",
+          } as any,
         },
       });
     }
