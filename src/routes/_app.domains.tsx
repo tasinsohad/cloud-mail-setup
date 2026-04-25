@@ -56,9 +56,6 @@ function toCsv(rows: Record<string, unknown>[]): string {
 }
 
 export const Route = createFileRoute("/_app/domains")({
-  validateSearch: (search: Record<string, unknown>): { batch_id?: string } => {
-    return { batch_id: search.batch_id as string | undefined };
-  },
   component: DomainsPage,
 });
 
@@ -75,7 +72,7 @@ const vpsSchema = z.object({
   ssh_user: z.string().trim().min(1).max(32),
 });
 
-type Domain = { id: string; name: string; status: string; cf_zone_id: string | null; server_id: string | null; batch_id: string | null };
+type Domain = { id: string; name: string; status: string; cf_zone_id: string | null; server_id: string | null };
 
 type WizardRow = {
   domain: string;
@@ -87,17 +84,14 @@ type WizardRow = {
 function DomainsPage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const { batch_id } = Route.useSearch();
 
   const { data: domains } = useQuery({
-    queryKey: ["domains", batch_id],
+    queryKey: ["domains"],
     queryFn: async () => {
-      let q = supabase
+      const { data, error } = await supabase
         .from("domains")
-        .select("id, name, status, cf_zone_id, server_id, batch_id")
+        .select("id, name, status, cf_zone_id, server_id")
         .order("created_at", { ascending: false });
-      if (batch_id) q = q.eq("batch_id", batch_id);
-      const { data, error } = await q;
       if (error) throw error;
       return data as Domain[];
     },
@@ -119,15 +113,6 @@ function DomainsPage() {
     for (const p of plans ?? []) m.set(p.domain_id, p);
     return m;
   }, [plans]);
-
-  const { data: batches } = useQuery({
-    queryKey: ["domain_batches"],
-    queryFn: async () => {
-      const { data } = await supabase.from("domain_batches").select("id, name");
-      return data ?? [];
-    },
-  });
-  const batchName = useMemo(() => new Map(batches?.map((b) => [b.id, b.name])), [batches]);
 
   const exportAll = async () => {
     const { data, error } = await supabase
@@ -168,9 +153,7 @@ function DomainsPage() {
     <div className="mx-auto w-full max-w-6xl space-y-6 p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {batch_id ? `Domains in Job` : `Domains`}
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Domains</h1>
           <p className="mt-1 text-muted-foreground">
             Paste your domains, set the VPS for each, choose how many inboxes you want — we plan subdomains and
             addresses automatically.
@@ -227,7 +210,7 @@ function DomainsPage() {
                         : "No plan yet"}
                       {" · "}
                       {d.cf_zone_id ? "Zone linked" : "No CF zone"}
-                      {d.batch_id ? ` · Job: ${batchName.get(d.batch_id) || d.batch_id}` : ""}
+                      {d.server_id ? " · VPS assigned" : " · No VPS"}
                     </div>
                   </div>
                 </Link>
