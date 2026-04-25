@@ -30,12 +30,12 @@ function Overview() {
   const { data: stats } = useQuery({
     queryKey: ["overview-stats"],
     queryFn: async () => {
-      const [d, s, r, sec, batches, inboxes] = await Promise.all([
+      const [d, s, r, sec, plans, inboxes] = await Promise.all([
         supabase.from("domains").select("id, status, created_at", { count: "exact" }),
         supabase.from("servers").select("id, status", { count: "exact" }),
         supabase.from("dns_records").select("id, status", { count: "exact" }),
         supabase.from("user_secrets").select("cf_api_token").maybeSingle(),
-        supabase.from("domain_batches").select("id", { count: "exact" }),
+        supabase.from("domain_plans").select("id", { count: "exact" }),
         supabase.from("planned_inboxes").select("id", { count: "exact" }),
       ]);
       return {
@@ -44,7 +44,7 @@ function Overview() {
         servers: s.count ?? 0,
         records: r.count ?? 0,
         hasCfToken: Boolean(sec.data?.cf_api_token),
-        jobs: batches.count ?? 0,
+        jobs: plans.count ?? 0,
         inboxes: inboxes.count ?? 0,
       };
     },
